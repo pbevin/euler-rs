@@ -21,3 +21,20 @@ impl Iterator for Fibs {
         Some(ans)
     }
 }
+
+pub fn is_palindrome(n: i64) -> bool {
+    // Apparently, this code is "old fashioned" and
+    // "should use iterators".
+    let s = format!("{}", n);
+    let s = s.as_bytes();
+    let mut i = 0;
+    let mut j = s.len() - 1;
+    while i < j {
+        if s[i] != s[j] {
+            return false;
+        }
+        i += 1;
+        j -= 1;
+    }
+    true
+}

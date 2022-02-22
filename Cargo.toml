@@ -8,6 +8,7 @@ name = "factors"
 harness = false
 
 [dependencies]
+itertools = "0.10.3"
 owo-colors = "3.2.0"
 
 [dev-dependencies]
