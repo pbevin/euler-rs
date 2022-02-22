@@ -1,0 +1,15 @@
+[package]
+name = "euler"
+version = "0.1.0"
+edition = "2021"
+
+[[bench]]
+name = "factors"
+harness = false
+
+[dependencies]
+owo-colors = "3.2.0"
+
+[dev-dependencies]
+proptest = "1.0.0"
+criterion = "0.3"
