@@ -1,21 +1,60 @@
+use std::time::Duration;
+use std::time::Instant;
+
 use euler::all_primes;
 use euler::factors;
 use euler::fibs;
 use euler::is_palindrome;
 use euler::partitions3;
+use euler::primes_upto;
 use itertools::Itertools;
 use owo_colors::OwoColorize;
 
+macro_rules! check {
+    ($fn:expr, $title:expr, $ans:expr) => {
+        let start = Instant::now();
+        let x: i64 = $fn;
+        let end = Instant::now();
+        show_check_result(stringify!($fn), $title, x, $ans, end - start);
+    };
+}
+
+fn show_check_result(expr: &str, title: &str, x: i64, ans: i64, time_taken: Duration) {
+    if x == ans {
+        let millis = time_taken.as_millis();
+        let timing = if millis == 0 {
+            String::new()
+        } else {
+            let mut text = format!(" {}ms", millis);
+            if millis < 1000 {
+                text = format!("{}", text.yellow());
+            } else {
+                text = format!("{}", text.red());
+            }
+            text
+        };
+        println!("{} {} {}{}", "🗸".green(), expr, title, timing);
+    } else {
+        println!(
+            "❌{} = {} (should be {})",
+            expr,
+            x.to_string().red(),
+            ans.to_string().green()
+        );
+    }
+}
+
 fn main() {
-    assert_eq!(p1(), 233168);
-    assert_eq!(p2(), 4613732);
-    assert_eq!(p3(), 6857);
-    assert_eq!(p4(), 906609);
-    assert_eq!(p5(), 232792560);
-    assert_eq!(p6(), 25164150);
-    assert_eq!(p7(), 104743);
-    assert_eq!(p8(), 23514624000);
-    assert_eq!(p9(), 31875000);
+    check!(p1(), "Multiples of 3 or 4", 233168);
+    check!(p2(), "Even fibonacci numbers", 4613732);
+    check!(p3(), "Largest prime factor", 6857);
+    check!(p4(), "Largest palindrome product", 906609);
+    check!(p5(), "Smallest multiple", 232792560);
+    check!(p6(), "Sum-square difference", 25164150);
+    check!(p7(), "10,001st prime", 104743);
+    check!(p8(), "Largest product in a series", 23514624000);
+    check!(p9(), "Special pythagorean triplet", 31875000);
+    check!(p10(), "Summation of primes", 142913828922);
 
     println!("{} All good", "🗸".green());
 }
@@ -93,4 +132,8 @@ fn p9() -> i64 {
         .map(|(a, b, c)| a * b * c)
         .max()
         .unwrap()
+}
+
+fn p10() -> i64 {
+    primes_upto(2_000_000).sum()
 }
