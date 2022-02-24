@@ -25,6 +25,7 @@ fn main() {
     check!(p11(), "Largest product in a grid", 70600674);
     check!(p12(), "Highly divisible triangular number", 76576500);
     check!(p13(), "Large sum", 5537376230);
+    check!(p14(), "Longest Collatz sequence", 837799);
 
     println!("{} All good", "🗸".green());
 }
@@ -230,4 +231,38 @@ fn p13() -> i64 {
     }
 
     result
+}
+
+fn p14() -> i64 {
+    let upto = 1_000_000;
+    let mut lengths = vec![0usize; upto];
+    lengths[1] = 1;
+    for i in 1..upto {
+        calc_collatz(i, &mut lengths);
+    }
+
+    lengths[..upto]
+        .iter()
+        .enumerate()
+        .max_by_key(|(_, n)| **n)
+        .unwrap()
+        .0 as i64
+}
+
+fn calc_collatz(i: usize, lengths: &mut [usize]) -> usize {
+    // If it's cached, return the cached value
+    if i < lengths.len() && lengths[i] > 0 {
+        return lengths[i];
+    }
+
+    // Otherwise, recurse.
+    let len = if i % 2 == 0 {
+        calc_collatz(i / 2, lengths)
+    } else {
+        calc_collatz(3 * i + 1, lengths)
+    };
+    if i < lengths.len() {
+        lengths[i] = len + 1;
+    }
+    len + 1
 }
