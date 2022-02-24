@@ -1,21 +1,21 @@
 use std::time::Duration;
 use std::time::Instant;
 
-use euler::all_primes;
 use euler::factors;
 use euler::fibs;
 use euler::is_palindrome;
 use euler::partitions3;
-use euler::primes_upto;
 use itertools::Itertools;
 use owo_colors::OwoColorize;
+use primal::Sieve;
+use primal::StreamingSieve;
 
 macro_rules! check {
     ($fn:expr, $title:expr, $ans:expr) => {
         let start = Instant::now();
         let x: i64 = $fn;
-        let end = Instant::now();
-        show_check_result(stringify!($fn), $title, x, $ans, end - start);
+        let duration = start.elapsed();
+        show_check_result(stringify!($fn), $title, x, $ans, duration);
     };
 }
 
@@ -109,7 +109,7 @@ fn p6() -> i64 {
 }
 
 fn p7() -> i64 {
-    all_primes().nth(10_000).unwrap()
+    StreamingSieve::nth_prime(10_001) as i64
 }
 
 fn p8() -> i64 {
@@ -135,5 +135,10 @@ fn p9() -> i64 {
 }
 
 fn p10() -> i64 {
-    primes_upto(2_000_000).sum()
+    let limit = 2_000_000;
+    let sum: usize = Sieve::new(limit)
+        .primes_from(2)
+        .filter(move |&p| p < limit)
+        .sum();
+    sum.try_into().unwrap()
 }

@@ -1,11 +1,9 @@
 mod factors;
-mod primes;
 mod windows;
 
 use std::iter::from_fn;
 
 pub use factors::*;
-pub use primes::*;
 pub use windows::*;
 
 pub fn fibs(a: i64, b: i64) -> Fibs {
