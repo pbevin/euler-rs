@@ -26,21 +26,44 @@ impl Iterator for Fibs {
     }
 }
 
-pub fn is_palindrome(n: i64) -> bool {
-    // Apparently, this code is "old fashioned" and
-    // "should use iterators".
-    let s = format!("{}", n);
-    let s = s.as_bytes();
-    let mut i = 0;
-    let mut j = s.len() - 1;
-    while i < j {
-        if s[i] != s[j] {
-            return false;
+/// Determines whether a number is a palindrome in decimal.
+///
+/// We pull decimal digits off the RHS of the number, and
+/// use them to build another number in reverse:
+///
+/// N        R
+/// 123456   0
+/// 12345    6
+/// 1234    65
+/// 123    654
+/// 12    6543
+/// 1    65432
+/// 0   654321
+///
+/// The trick is that we can interrupt the loop as
+/// soon as N >= R, which happens about half way
+/// through the process. If the comparison is ==, then
+/// the number is a palindrome; if it's >, then it's not.
+///
+/// Compared to the naive method (call to_string() and
+/// compare the string with its reversal), this takes
+/// the release build from 38ms to 5ms on problem 4.
+pub fn is_palindrome(num: i64) -> bool {
+    let mut n = num;
+    let mut reversed = 0;
+    while n > 0 {
+        let d = n % 10;
+        n /= 10;
+        reversed *= 10;
+        reversed += d;
+        match reversed.cmp(&n) {
+            std::cmp::Ordering::Less => (),
+            std::cmp::Ordering::Equal => return true,
+            std::cmp::Ordering::Greater => return false,
         }
-        i += 1;
-        j -= 1;
     }
-    true
+
+    num == reversed
 }
 
 /// Iterator over all triples (a, b, c) where a + b + c == n and
@@ -69,6 +92,8 @@ pub fn partitions3(n: i64) -> impl Iterator<Item = (i64, i64, i64)> {
 
 #[cfg(test)]
 mod tests {
+    use crate::is_palindrome;
+
     use super::*;
 
     #[test]
@@ -96,5 +121,16 @@ mod tests {
         assert_eq!(p11.next().unwrap(), (2, 3, 6));
         assert_eq!(p11.next().unwrap(), (2, 4, 5));
         assert!(p11.next().is_none());
+    }
+
+    #[test]
+    fn test_is_palindrome() {
+        for n in [9, 99, 999, 909, 101, 111, 121, 1001, 1111, 1221, 12321, 123321] {
+            assert!(is_palindrome(n), "{}", n);
+        }
+
+        for n in [91, 19, 100, 110, 123, 1000, 1002, 1232] {
+            assert!(!is_palindrome(n), "{}", n);
+        }
     }
 }
