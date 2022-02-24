@@ -27,6 +27,7 @@ fn main() {
     check!(p13(), "Large sum", 5537376230);
     check!(p14(), "Longest Collatz sequence", 837799);
     check!(p15(), "Lattice paths", 137846528820);
+    check!(p50(), "Consecutive prime sum", 997651);
 
     println!("{} All good", "🗸".green());
 }
@@ -290,4 +291,42 @@ fn p15() -> i64 {
     }
 
     num_routes[size * size - 1]
+}
+
+fn p50() -> i64 {
+    struct Best {
+        prime: usize,
+        count: usize,
+    }
+
+    let size = 1_000_000;
+    let sieve = Sieve::new(size);
+
+    let mut best = Best { prime: 0, count: 0 };
+
+    for p0 in sieve.primes_from(2) {
+        if p0 * (best.count + 1) > size {
+            // To make a record breaker, we'd need at least (best.1 + 1)
+            // primes, but that would take us over the limit. And the
+            // same is true for subsequent primes.
+            break;
+        }
+
+        // Form partial sums starting at P_n, and record any record-breaking
+        // results in the array
+        let mut sum = 0;
+        let mut count = 0;
+        for p in sieve.primes_from(p0) {
+            sum += p;
+            count += 1;
+            if sum >= size {
+                break;
+            }
+            if sieve.is_prime(sum) && count > best.count {
+                best = Best { prime: sum, count };
+            }
+        }
+    }
+
+    best.prime as i64
 }
