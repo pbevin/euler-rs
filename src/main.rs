@@ -24,6 +24,7 @@ fn main() {
     check!(p10(), "Summation of primes", 142913828922);
     check!(p11(), "Largest product in a grid", 70600674);
     check!(p12(), "Highly divisible triangular number", 76576500);
+    check!(p13(), "Large sum", 5537376230);
 
     println!("{} All good", "🗸".green());
 }
@@ -179,7 +180,8 @@ fn p12() -> i64 {
     let sieve = Sieve::new(10_000); // guessing the limit
     for k in 10.. {
         let n = k * (k + 1) / 2;
-        let num_factors: usize = sieve.factor(n)
+        let num_factors: usize = sieve
+            .factor(n)
             .unwrap()
             .into_iter()
             .map(|(_, n)| n + 1)
@@ -190,4 +192,42 @@ fn p12() -> i64 {
         }
     }
     unreachable!()
+}
+
+fn p13() -> i64 {
+    // Each entry in numbers[] is a vector of digits, least significant digit first.
+    // This ordering makes it a little easier to do addition.
+    //
+    // The digit type is u16, which allows us to add 100 digits and a carry without
+    // converting to a wider type.
+    let numbers: Vec<Vec<u16>> = include_str!("p13.txt")
+        .lines()
+        .map(|line| {
+            line.chars()
+                .rev()
+                .map(|ch| ch.to_digit(10).unwrap() as u16)
+                .collect()
+        })
+        .collect();
+
+    // All numbers are the same length.
+    let mut sum = vec![];
+    let mut carry = 0;
+    for pos in 0..numbers[0].len() {
+        let column_sum: u16 = numbers.iter().map(|num| num[pos]).sum();
+        let total: u16 = carry + column_sum;
+        let digit = total % 10;
+        sum.push(digit);
+        carry = total / 10;
+    }
+
+    // At this point, we have an unknown number of digits in `carry`.
+    // Top it up to 10 digits by pulling from the end of `sum`.
+    let mut result = carry as i64;
+    while result < 1_000_000_000 {
+        result *= 10;
+        result += sum.pop().unwrap() as i64;
+    }
+
+    result
 }
