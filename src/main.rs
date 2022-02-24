@@ -26,6 +26,7 @@ fn main() {
     check!(p12(), "Highly divisible triangular number", 76576500);
     check!(p13(), "Large sum", 5537376230);
     check!(p14(), "Longest Collatz sequence", 837799);
+    check!(p15(), "Lattice paths", 137846528820);
 
     println!("{} All good", "🗸".green());
 }
@@ -265,4 +266,28 @@ fn calc_collatz(i: usize, lengths: &mut [usize]) -> usize {
         lengths[i] = len + 1;
     }
     len + 1
+}
+
+fn p15() -> i64 {
+    let size = 21;
+
+    let mut num_routes = vec![0i64; size * size];
+
+    // Initialize the top and left edges - each vertex has exactly one
+    // way to get to it.
+    for x in 0..size {
+        num_routes[x] = 1;
+        num_routes[x * size] = 1;
+    }
+
+    for y in 1..size {
+        for x in 1..size {
+            // Vertex (x, y) could come from (x-1, y) or (x, y-1).
+            let pos1 = x - 1 + y * size;
+            let pos2 = x + (y - 1) * size;
+            num_routes[x + y * size] = num_routes[pos1] + num_routes[pos2];
+        }
+    }
+
+    num_routes[size * size - 1]
 }
