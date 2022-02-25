@@ -2,6 +2,7 @@ mod factors;
 mod windows;
 
 use std::iter::from_fn;
+use std::ops::Deref;
 
 pub use factors::*;
 pub use windows::*;
@@ -90,6 +91,36 @@ pub fn partitions3(n: i64) -> impl Iterator<Item = (i64, i64, i64)> {
     })
 }
 
+#[derive(Default)]
+pub struct Min<T> {
+    value: Option<T>,
+}
+
+impl<T> Min<T>
+where
+    T: Clone,
+    T: PartialOrd,
+{
+    pub fn new() -> Self {
+        Self { value: None }
+    }
+
+    pub fn push(&mut self, t: T) {
+        match &self.value {
+            Some(current_best) if t >= *current_best => (),
+            _ => self.value = Some(t),
+        }
+    }
+}
+
+impl<T> Deref for Min<T> {
+    type Target = Option<T>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.value
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::is_palindrome;
@@ -125,7 +156,9 @@ mod tests {
 
     #[test]
     fn test_is_palindrome() {
-        for n in [9, 99, 999, 909, 101, 111, 121, 1001, 1111, 1221, 12321, 123321] {
+        for n in [
+            9, 99, 999, 909, 101, 111, 121, 1001, 1111, 1221, 12321, 123321,
+        ] {
             assert!(is_palindrome(n), "{}", n);
         }
 
