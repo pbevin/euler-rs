@@ -75,26 +75,28 @@ fn p5() -> i64 {
     n
 }
 
-fn p6() -> i64 {
-    let square = |n: i64| n * n;
+fn p6() -> u32 {
+    fn square(n: u32) -> u32 {
+        n * n
+    }
 
-    let sum_of_squares: i64 = (1..=100).map(square).sum();
-    let square_of_sum = square((1..=100).sum());
+    let sum_of_squares = (1..=100).map(square).sum::<u32>();
+    let square_of_sum = square((1..=100).sum::<u32>());
 
     square_of_sum - sum_of_squares
 }
 
-fn p7() -> i64 {
-    StreamingSieve::nth_prime(10_001) as i64
+fn p7() -> usize {
+    StreamingSieve::nth_prime(10_001)
 }
 
-fn p8() -> i64 {
+fn p8() -> u64 {
     let digits = include_str!("p8.txt")
         .bytes()
         .filter(|b| b.is_ascii_digit())
         .map(|b| b - b'0')
-        .map(|digit| digit as i64)
-        .collect::<Vec<i64>>();
+        .map(|digit| digit.into())
+        .collect::<Vec<_>>();
 
     euler::windows(&digits, 13)
         .map(|xs| xs.iter().product())
@@ -164,7 +166,7 @@ where
         .unwrap()
 }
 
-fn p12() -> i64 {
+fn p12() -> usize {
     // If n = p1^n1 * p2^n2 * p3^n3 * ...
     // then the number of divisors is (n1 + 1)(n2 + 1)(n3 + 1)...
     //
@@ -192,13 +194,13 @@ fn p12() -> i64 {
             .product();
 
         if num_factors > 500 {
-            return (k * (k + 1) / 2) as i64;
+            return k * (k + 1) / 2;
         }
     }
     unreachable!()
 }
 
-fn p13() -> i64 {
+fn p13() -> usize {
     // Each entry in numbers[] is a vector of digits, least significant digit first.
     // This ordering makes it a little easier to do addition.
     //
@@ -227,32 +229,29 @@ fn p13() -> i64 {
 
     // At this point, we have an unknown number of digits in `carry`.
     // Top it up to 10 digits by pulling from the end of `sum`.
-    let mut result = carry as i64;
+    let mut result = carry.into();
     while result < 1_000_000_000 {
         result *= 10;
-        result += sum.pop().unwrap() as i64;
+        result += sum.pop().unwrap() as usize;
     }
 
     result
 }
 
-fn p14() -> i64 {
+fn p14() -> usize {
     let upto = 1_000_000;
-    let mut lengths = vec![0usize; upto];
+    let mut lengths = vec![0; upto];
     lengths[1] = 1;
     for i in 1..upto {
         calc_collatz(i, &mut lengths);
     }
 
-    lengths[..upto]
-        .iter()
-        .enumerate()
-        .max_by_key(|(_, n)| **n)
+    (1..upto)
+        .max_by_key(|n| lengths[*n])
         .unwrap()
-        .0 as i64
 }
 
-fn calc_collatz(i: usize, lengths: &mut [usize]) -> usize {
+fn calc_collatz(i: usize, lengths: &mut [u32]) -> u32 {
     // If it's cached, return the cached value
     if i < lengths.len() && lengths[i] > 0 {
         return lengths[i];
@@ -270,10 +269,10 @@ fn calc_collatz(i: usize, lengths: &mut [usize]) -> usize {
     len + 1
 }
 
-fn p15() -> i64 {
+fn p15() -> usize {
     let size = 21;
 
-    let mut num_routes = vec![0i64; size * size];
+    let mut num_routes = vec![0; size * size];
 
     // Initialize the top and left edges - each vertex has exactly one
     // way to get to it.
@@ -294,11 +293,11 @@ fn p15() -> i64 {
     num_routes[size * size - 1]
 }
 
-fn p50() -> i64 {
+fn p50() -> usize {
     let size = 1_000_000;
     let sieve = Sieve::new(size);
 
-    let mut best = Best::<CountOf<i64>>::new();
+    let mut best = Best::<CountOf<usize>>::new();
 
     for p0 in sieve.primes_from(2) {
         if let Some(CountOf { count, .. }) = *best {
@@ -321,7 +320,7 @@ fn p50() -> i64 {
                 break;
             }
             if sieve.is_prime(sum) {
-                best.max(CountOf::new(count, sum.try_into().unwrap()));
+                best.max(CountOf::new(count, sum));
             }
         }
     }
@@ -329,7 +328,7 @@ fn p50() -> i64 {
     best.into_inner().map(|hit| *hit).unwrap()
 }
 
-fn p51() -> i64 {
+fn p51() -> usize {
     let sieve = Sieve::new(1_000_000);
     // There are 10 possible digit replacements, and none of them
     // can be divisible by 3. So if we are to get 8 primes, there
@@ -398,9 +397,9 @@ fn p51() -> i64 {
             let mut first_prime = Best::new();
             for j in 0..10 {
                 let num = fixed_digits + j * mask;
-                if num > 100_000 && sieve.is_prime(num.try_into().unwrap()) {
+                if num > 100_000 && sieve.is_prime(num) {
                     count += 1;
-                    first_prime.min(num as i64);
+                    first_prime.min(num);
                 }
             }
             if count >= 8 {
@@ -408,5 +407,5 @@ fn p51() -> i64 {
             }
         }
     }
-    min.unwrap() as i64
+    min.unwrap()
 }

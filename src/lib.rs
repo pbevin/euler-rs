@@ -83,7 +83,7 @@ pub fn count_decimal_digits(num: i64) -> usize {
     count
 }
 
-pub const POWERS_OF_10: [i64; 13] = [
+pub const POWERS_OF_10: [usize; 13] = [
     1,
     10,
     100,
