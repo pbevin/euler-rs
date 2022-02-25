@@ -1,4 +1,5 @@
 mod factors;
+mod poker;
 mod windows;
 
 use std::iter::from_fn;
@@ -6,6 +7,7 @@ use std::ops::Deref;
 
 pub use factors::*;
 pub use windows::*;
+pub use poker::*;
 
 pub fn fibs(a: i64, b: i64) -> Fibs {
     Fibs { a, b }

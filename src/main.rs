@@ -2,12 +2,15 @@ mod check;
 
 use std::time::Instant;
 
+use euler::eval_poker_hand;
 use euler::factors;
 use euler::fibs;
 use euler::is_palindrome;
 use euler::partitions3;
 use euler::Best;
+use euler::Card;
 use euler::CountOf;
+use euler::PokerHand;
 use itertools::Itertools;
 use owo_colors::OwoColorize;
 use primal::Sieve;
@@ -31,6 +34,7 @@ fn main() {
     check!(p15(), "Lattice paths", 137846528820);
     check!(p50(), "Consecutive prime sum", 997651);
     check!(p51(), "Prime digit replacements", 121313);
+    check!(p54(), "Poker hands", 376);
 
     println!("{} All good", "🗸".green());
 }
@@ -246,9 +250,7 @@ fn p14() -> usize {
         calc_collatz(i, &mut lengths);
     }
 
-    (1..upto)
-        .max_by_key(|n| lengths[*n])
-        .unwrap()
+    (1..upto).max_by_key(|n| lengths[*n]).unwrap()
 }
 
 fn calc_collatz(i: usize, lengths: &mut [u32]) -> u32 {
@@ -408,4 +410,24 @@ fn p51() -> usize {
         }
     }
     min.unwrap()
+}
+
+fn p54() -> usize {
+    include_str!("p054_poker.txt")
+        .lines()
+        .map(deal)
+        .filter(|(p1, p2)| eval_poker_hand(p1) > eval_poker_hand(p2))
+        .count()
+}
+
+fn deal(line: &str) -> (PokerHand, PokerHand) {
+    let cards: Vec<Card> = line
+        .split_ascii_whitespace()
+        .map(|s| s.parse().unwrap())
+        .collect();
+
+    let cards1: [Card; 5] = [cards[0], cards[1], cards[2], cards[3], cards[4]];
+    let cards2: [Card; 5] = [cards[5], cards[6], cards[7], cards[8], cards[9]];
+
+    (PokerHand::new(cards1), PokerHand::new(cards2))
 }
