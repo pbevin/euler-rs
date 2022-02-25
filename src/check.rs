@@ -1,7 +1,6 @@
 use owo_colors::OwoColorize;
 use std::time::Duration;
 
-
 #[macro_export]
 macro_rules! check {
     ($fn:expr, $title:expr, $ans:expr) => {

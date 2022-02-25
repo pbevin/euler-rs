@@ -6,7 +6,8 @@ use euler::factors;
 use euler::fibs;
 use euler::is_palindrome;
 use euler::partitions3;
-use euler::Min;
+use euler::Best;
+use euler::CountOf;
 use itertools::Itertools;
 use owo_colors::OwoColorize;
 use primal::Sieve;
@@ -164,8 +165,6 @@ where
 }
 
 fn p12() -> i64 {
-    // Maps prime numbers to count of factors
-
     // If n = p1^n1 * p2^n2 * p3^n3 * ...
     // then the number of divisors is (n1 + 1)(n2 + 1)(n3 + 1)...
     //
@@ -296,22 +295,19 @@ fn p15() -> i64 {
 }
 
 fn p50() -> i64 {
-    struct Best {
-        prime: usize,
-        count: usize,
-    }
-
     let size = 1_000_000;
     let sieve = Sieve::new(size);
 
-    let mut best = Best { prime: 0, count: 0 };
+    let mut best = Best::<CountOf<i64>>::new();
 
     for p0 in sieve.primes_from(2) {
-        if p0 * (best.count + 1) > size {
-            // To make a record breaker, we'd need at least (best.1 + 1)
-            // primes, but that would take us over the limit. And the
-            // same is true for subsequent primes.
-            break;
+        if let Some(CountOf { count, .. }) = *best {
+            if p0 * (count + 1) > size {
+                // To make a record breaker, we'd need at least count + 1
+                // primes, but that would take us over the limit. And the
+                // same is true for subsequent primes.
+                break;
+            }
         }
 
         // Form partial sums starting at P_n, and record any record-breaking
@@ -324,13 +320,13 @@ fn p50() -> i64 {
             if sum >= size {
                 break;
             }
-            if sieve.is_prime(sum) && count > best.count {
-                best = Best { prime: sum, count };
+            if sieve.is_prime(sum) {
+                best.max(CountOf::new(count, sum.try_into().unwrap()));
             }
         }
     }
 
-    best.prime as i64
+    best.into_inner().map(|hit| *hit).unwrap()
 }
 
 fn p51() -> i64 {
@@ -384,9 +380,9 @@ fn p51() -> i64 {
         (5, 3), // a*b**c
         (5, 4), // ab***c
     ];
-    let powers10 = [1, 10, 100, 1000, 10_000, 100_000];
+    let powers10 = euler::POWERS_OF_10;
 
-    let mut min = Min::new();
+    let mut min = Best::new();
     for n in 0..1000 {
         let (a, b, c) = (n / 100, (n / 10) % 10, n % 10);
 
@@ -399,16 +395,16 @@ fn p51() -> i64 {
             let fixed_digits = a * powers10[k1] + b * powers10[k2] + c;
             let mask = 111_111 - (powers10[k1] + powers10[k2] + 1);
             let mut count = 0;
-            let mut first_prime = Min::new();
+            let mut first_prime = Best::new();
             for j in 0..10 {
                 let num = fixed_digits + j * mask;
-                if num > 100_000 && sieve.is_prime(num) {
+                if num > 100_000 && sieve.is_prime(num.try_into().unwrap()) {
                     count += 1;
-                    first_prime.push(num as i64);
+                    first_prime.min(num as i64);
                 }
             }
             if count >= 8 {
-                min.push(first_prime.unwrap());
+                min.min(first_prime.unwrap());
             }
         }
     }
