@@ -4,6 +4,7 @@ mod p012_triangle_divisors;
 mod p013_large_sum;
 mod p014_collatz;
 mod p054_poker;
+mod p081_path_sum;
 
 use euler::factors;
 use euler::fibs;
@@ -22,6 +23,7 @@ pub use p012_triangle_divisors::*;
 pub use p013_large_sum::*;
 pub use p014_collatz::*;
 pub use p054_poker::*;
+pub use p081_path_sum::*;
 
 
 

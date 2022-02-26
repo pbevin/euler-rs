@@ -27,6 +27,8 @@ fn main() {
     check!(p54(), "Poker hands", 376);
     check!(p76(), "Counting summations", 190569291);
     check!(p78(), "Coin partitions", 55374);
+    check!(p81(), "Path sum 2 ways", 427337);
+    check!(p82(), "Path sum 3 ways", 260324);
 
     println!("{} All good", "🗸".green());
 }
