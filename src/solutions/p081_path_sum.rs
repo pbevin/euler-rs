@@ -39,43 +39,36 @@ fn p081_solve(matrix: Matrix) -> usize {
 
 fn p082_solve(matrix: Matrix) -> usize {
     let size = matrix.width;
-    let mut min_cost = Matrix::with_max_default(size);
 
     // The leftmost column is easy, because we can start anywhere. The
     // min cost is just the value.
-    for j in 0..size {
-        min_cost.put(0, j, matrix.get(0, j));
-    }
+    let mut min_cost: Vec<usize> = (0..size).map(|j| matrix.get(0, j)).collect();
 
     for i in 1..size {
         // For each column, we can either go up it or down it; not both.
+
+        // First, calculate the costs in this column if we are only allowed to go down and right.
         let mut prev = usize::MAX;
         let mut down_costs = vec![];
-        for j in 0..size {
-            let from_above = prev;
-            let from_left = min_cost.get(i - 1, j);
-            let a = matrix.get(i, j);
-            let best = a + cmp::min(from_above, from_left);
-            prev = best;
+        for (j, &from_left) in min_cost.iter().enumerate() {
+            let best = matrix.get(i, j) + cmp::min(prev, from_left);
             down_costs.push(best);
+            prev = best;
         }
 
         // We calculate up_costs in a similar way, but with more reversing.
         let mut prev = usize::MAX;
         let mut up_costs = vec![];
-        for j in (0..size).rev() {
-            let from_below = prev;
-            let from_left = min_cost.get(i - 1, j);
-            let a = matrix.get(i, j);
-            let best = a + cmp::min(from_below, from_left);
-            prev = best;
+        for (j, &from_left) in min_cost.iter().enumerate().rev() {
+            let best = matrix.get(i, j) + cmp::min(prev, from_left);
             up_costs.push(best);
+            prev = best;
         }
         up_costs.reverse();
 
         // Now we can just read off the best paths
-        for j in 0..size {
-            let mut best = min_cost.get(i - 1, j);
+        min_cost = (0..size).map(|j| {
+            let mut best = min_cost[j];
             if j > 0 {
                 best = cmp::min(down_costs[j - 1], best);
             }
@@ -83,12 +76,12 @@ fn p082_solve(matrix: Matrix) -> usize {
                 best = cmp::min(up_costs[j + 1], best);
             }
             let a = matrix.get(i, j);
-            min_cost.put(i, j, best + a);
-        }
+            best + a
+        }).collect();
     }
 
     // Finally, get the minimum cost of anything in the right hand column
-    (0..size).map(|j| min_cost.get(size - 1, j)).min().unwrap()
+    min_cost.into_iter().min().unwrap()
 }
 
 pub struct Matrix {
