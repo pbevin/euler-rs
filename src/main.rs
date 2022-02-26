@@ -1,7 +1,5 @@
 mod check;
 
-use std::time::Instant;
-
 use euler::eval_poker_hand;
 use euler::factors;
 use euler::fibs;
@@ -12,9 +10,11 @@ use euler::Card;
 use euler::CountOf;
 use euler::PokerHand;
 use itertools::Itertools;
+use memoize::memoize;
 use owo_colors::OwoColorize;
 use primal::Sieve;
 use primal::StreamingSieve;
+use std::time::Instant;
 
 fn main() {
     check!(p1(), "Multiples of 3 or 4", 233168);
@@ -35,6 +35,8 @@ fn main() {
     check!(p50(), "Consecutive prime sum", 997651);
     check!(p51(), "Prime digit replacements", 121313);
     check!(p54(), "Poker hands", 376);
+    check!(p76(), "Counting summations", 190569291);
+    check!(p78(), "Coin partitions", 55374);
 
     println!("{} All good", "🗸".green());
 }
@@ -430,4 +432,97 @@ fn deal(line: &str) -> (PokerHand, PokerHand) {
     let cards2: [Card; 5] = [cards[5], cards[6], cards[7], cards[8], cards[9]];
 
     (PokerHand::new(cards1), PokerHand::new(cards2))
+}
+
+fn p76() -> usize {
+    // The number of ways to write a number as a sum of smaller numbers is
+    // called the _partition function_ P(n), and has been studied extensively.
+    // Hardy and Wright present the material in chapter 19; in particular,
+    // section 19.10, which shows this recurrence:
+
+    #[memoize]
+    fn euler_p(n: usize) -> usize {
+        if n <= 1 {
+            return 1;
+        }
+        let mut sum: usize = 0;
+        for k in 1..=n {
+            let mut t = 0;
+            let d1 = k * (3 * k - 1) / 2;
+            if n >= d1 {
+                // println!("{} => {}", n, n - d1);
+                t += euler_p(n - d1);
+            }
+            let d2 = k * (3 * k + 1) / 2;
+            if n >= d2 {
+                // println!("{} => {}", n, n - d2);
+                t += euler_p(n - d2);
+            }
+
+            if k % 2 == 1 {
+                sum += t;
+            } else {
+                debug_assert!(sum > t);
+                sum -= t;
+            }
+        }
+        sum
+    }
+
+    debug_assert_eq!(euler_p(1), 1);
+    debug_assert_eq!(euler_p(2), 2);
+
+    // ...and the problem asks for the number of ways to partition a number
+    // into 2 or more groups. That's easy, because there is only one way to
+    // have a single group, so the difference is 1.
+    euler_p(100) - 1
+}
+
+fn p78() -> i64 {
+    // This is like problem 76, except that we're asked for the actual number
+    // of permutations, rather than 1 less. Also, we have to search a possibly
+    // unbounded space to get there.
+    //
+    // The numbers get too big for a usize quickly: p(1,000) > 2^100. Fortunately,
+    // since we only care about the value mod N, we can work in Z_N (N = 1,000,000).
+    //
+    // The code below is somewhat optimized from euler_p() in p76, because we're
+    // doing a much longer calculation.
+
+    let mut p = Vec::with_capacity(300_000);
+    p.push(1);
+    p.push(1);
+
+    for n in 2.. {
+        let mut sum = 0;
+        for k in 1..n {
+            let n1 = n - k * (3 * k - 1) / 2;
+            let n2 = n - k * (3 * k + 1) / 2;
+            // If n1 is negative, then so is n2, and we can just stop counting now.
+            if n1 < 0 {
+                break;
+            }
+
+            let mut t = p[n1 as usize];
+            if n2 >= 0 {
+                t += p[n2 as usize]
+            };
+
+            let adding = k % 2 == 1;
+            if adding {
+                sum += t;
+            } else {
+                sum -= t;
+            }
+        }
+        sum %= 1_000_000;
+        if sum == 0 {
+            return n;
+        }
+        p.push(sum);
+        if n == 100_000 {
+            panic!("missed it");
+        }
+    }
+    unreachable!()
 }
