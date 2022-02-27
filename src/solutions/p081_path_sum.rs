@@ -1,87 +1,111 @@
-use std::cmp;
+use priority_queue::PriorityQueue;
+use std::cmp::Reverse;
+use std::collections::hash_map::RandomState;
 
-fn read_matrix() -> Matrix {
-    Matrix::read(include_str!("p081_matrix.txt"), 80)
-}
+const SIZE: usize = 80;
 
 pub fn p81() -> usize {
     p081_solve(read_matrix())
+}
+
+fn p081_solve(matrix: Matrix) -> usize {
+    let start_nodes = [(0, 0)];
+    let end_nodes = [(matrix.width - 1, matrix.width - 1)];
+    min_path_sum(matrix, &[Dir::E, Dir::S], &start_nodes, &end_nodes)
 }
 
 pub fn p82() -> usize {
     p082_solve(read_matrix())
 }
 
-fn p081_solve(matrix: Matrix) -> usize {
-    let size = matrix.width;
-    let mut min_cost = Matrix::with_max_default(size);
-
-    min_cost.put(0, 0, matrix.get(0, 0));
-    for i in 1..size {
-        min_cost.put(i, 0, min_cost.get(i - 1, 0) + matrix.get(i, 0));
-    }
-    for j in 1..size {
-        min_cost.put(0, j, min_cost.get(0, j - 1) + matrix.get(0, j));
-    }
-
-    for j in 1..size {
-        for i in 1..size {
-            let a = matrix.get(i, j);
-            let from_above = min_cost.get(i, j - 1);
-            let from_left = min_cost.get(i - 1, j);
-            let from_best = cmp::min(from_above, from_left);
-            min_cost.put(i, j, from_best + a);
-        }
-    }
-
-    min_cost.get(size - 1, size - 1)
+fn p082_solve(matrix: Matrix) -> usize {
+    let dirs = [Dir::E, Dir::S, Dir::N];
+    let start_nodes: Vec<_> = (0..matrix.width).map(|j| (0, j)).collect();
+    let end_nodes: Vec<_> = (0..matrix.width).map(|j| (matrix.width - 1, j)).collect();
+    min_path_sum(matrix, &dirs, &start_nodes, &end_nodes)
 }
 
-fn p082_solve(matrix: Matrix) -> usize {
+pub fn p83() -> usize {
+    let dirs = [Dir::N, Dir::E, Dir::S, Dir::W];
+    let start_nodes = [(0, 0)];
+    let end_nodes = [(SIZE - 1, SIZE - 1)];
+    min_path_sum(read_matrix(), &dirs, &start_nodes, &end_nodes)
+}
+
+fn read_matrix() -> Matrix {
+    Matrix::read(include_str!("p081_matrix.txt"), 80)
+}
+
+enum Dir {
+    N,
+    E,
+    S,
+    W,
+}
+
+impl Dir {
+    pub fn try_move(&self, from: &(usize, usize), size: usize) -> Option<(usize, usize)> {
+        let &(x, y) = from;
+        let (nx, ny) = match self {
+            Dir::N => (x, y.checked_sub(1)?),
+            Dir::E => (x.checked_add(1)?, y),
+            Dir::S => (x, y.checked_add(1)?),
+            Dir::W => (x.checked_sub(1)?, y),
+        };
+        if nx < size && ny < size {
+            Some((nx, ny))
+        } else {
+            None
+        }
+    }
+}
+
+fn min_path_sum(
+    matrix: Matrix,
+    dirs: &[Dir],
+    start_nodes: &[(usize, usize)],
+    end_nodes: &[(usize, usize)],
+) -> usize {
     let size = matrix.width;
 
-    // The leftmost column is easy, because we can start anywhere. The
-    // min cost is just the value.
-    let mut min_cost: Vec<usize> = (0..size).map(|j| matrix.get(0, j)).collect();
-
-    for i in 1..size {
-        // For each column, we can either go up it or down it; not both.
-
-        // First, calculate the costs in this column if we are only allowed to go down and right.
-        let mut prev = usize::MAX;
-        let mut down_costs = vec![];
-        for (j, &from_left) in min_cost.iter().enumerate() {
-            let best = matrix.get(i, j) + cmp::min(prev, from_left);
-            down_costs.push(best);
-            prev = best;
-        }
-
-        // We calculate up_costs in a similar way, but with more reversing.
-        let mut prev = usize::MAX;
-        let mut up_costs = vec![];
-        for (j, &from_left) in min_cost.iter().enumerate().rev() {
-            let best = matrix.get(i, j) + cmp::min(prev, from_left);
-            up_costs.push(best);
-            prev = best;
-        }
-        up_costs.reverse();
-
-        // Now we can just read off the best paths
-        min_cost = (0..size).map(|j| {
-            let mut best = min_cost[j];
-            if j > 0 {
-                best = cmp::min(down_costs[j - 1], best);
-            }
-            if j < size - 1 {
-                best = cmp::min(up_costs[j + 1], best);
-            }
-            let a = matrix.get(i, j);
-            best + a
-        }).collect();
+    let mut costs = vec![usize::MAX; matrix.data.len()];
+    for &(i, j) in start_nodes {
+        costs[i + j * size] = matrix.get(i, j);
     }
 
-    // Finally, get the minimum cost of anything in the right hand column
-    min_cost.into_iter().min().unwrap()
+    let mut queue: PriorityQueue<(usize, usize), Reverse<usize>, RandomState> =
+        PriorityQueue::from_iter(
+            start_nodes
+                .iter()
+                .copied()
+                .map(|node @ (x, y)| (node, Reverse(matrix.get(x, y)))),
+        );
+
+    while let Some((current, _)) = queue.pop() {
+        let (x, y) = current;
+        let unfinished_neighbours = dirs.iter().filter_map(|dir| dir.try_move(&current, size));
+        for neighbour in unfinished_neighbours {
+            let (nx, ny) = neighbour;
+            let cost = costs[x + y * size] + matrix.get(nx, ny);
+            let p = &mut costs[nx + ny * size];
+            if cost < *p {
+                *p = cost;
+                queue.push(neighbour, Reverse(cost));
+            }
+        }
+    }
+    // for j in 0..5 {
+    //     print!("{:2}:", j);
+    //     for i in 0..5 {
+    //         print!(" {:4}", costs[i + j * size]);
+    //     }
+    //     println!();
+    // }
+    return end_nodes
+        .iter()
+        .map(|&(x, y)| costs[x + y * size])
+        .min()
+        .unwrap();
 }
 
 pub struct Matrix {
@@ -104,20 +128,10 @@ impl Matrix {
         Self::new(data, width)
     }
 
-    pub fn with_max_default(width: usize) -> Self {
-        let data = vec![usize::MAX; width * width];
-        Self::new(data, width)
-    }
-
     pub fn get(&self, i: usize, j: usize) -> usize {
-        debug_assert!(i < self.width);
-        debug_assert!(i + j * self.width < self.data.len());
+        debug_assert!(i < self.width, "{:?}", (i, j));
+        debug_assert!(i + j * self.width < self.data.len(), "{:?}", (i, j));
         self.data[i + j * self.width]
-    }
-
-    pub fn put(&mut self, i: usize, j: usize, val: usize) {
-        debug_assert!(i < self.width);
-        self.data[i + j * self.width] = val;
     }
 }
 

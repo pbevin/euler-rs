@@ -29,6 +29,7 @@ fn main() {
     check!(p78(), "Coin partitions", 55374);
     check!(p81(), "Path sum 2 ways", 427337);
     check!(p82(), "Path sum 3 ways", 260324);
+    check!(p83(), "Path sum 4 ways", 425185);
 
     println!("{} All good", "🗸".green());
 }
