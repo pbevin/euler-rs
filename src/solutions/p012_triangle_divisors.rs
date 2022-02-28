@@ -1,5 +1,7 @@
 use primal::Sieve;
 
+euler::solution!(p12, "Highly divisible triangular number", 76576500);
+
 pub fn p12() -> usize {
     // If n = p1^n1 * p2^n2 * p3^n3 * ...
     // then the number of divisors is (n1 + 1)(n2 + 1)(n3 + 1)...

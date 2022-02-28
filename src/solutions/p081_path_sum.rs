@@ -2,6 +2,10 @@ use priority_queue::PriorityQueue;
 use std::cmp::Reverse;
 use std::collections::hash_map::RandomState;
 
+euler::solution!(p81, "Path sum 2 ways", 427337);
+euler::solution!(p82, "Path sum 3 ways", 260324);
+euler::solution!(p83, "Path sum 4 ways", 425185);
+
 const SIZE: usize = 80;
 
 pub fn p81() -> usize {

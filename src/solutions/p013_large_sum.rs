@@ -1,3 +1,5 @@
+euler::solution!(p13, "Large sum", 5537376230);
+
 pub fn p13() -> usize {
     // Each entry in numbers[] is a vector of digits, least significant digit first.
     // This ordering makes it a little easier to do addition.

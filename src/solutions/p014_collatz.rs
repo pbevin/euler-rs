@@ -1,3 +1,5 @@
+euler::solution!(p14, "Longest Collatz sequence", 837799);
+
 pub fn p14() -> usize {
     let upto = 1_000_000;
     let mut lengths = vec![0; upto];

@@ -1,6 +1,8 @@
 use itertools::Itertools;
 
-pub fn p11() -> i64 {
+euler::solution!(p011, "Largest product in a grid", 70600674);
+
+pub fn p011() -> i64 {
     let size = 20;
     let grid = include_str!("p011.txt")
         .split_ascii_whitespace()

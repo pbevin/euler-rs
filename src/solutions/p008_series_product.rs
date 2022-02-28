@@ -1,5 +1,6 @@
+euler::solution!(p008, "Largest product in a series", 23514624000);
 
-pub fn p8() -> u64 {
+pub fn p008() -> u64 {
     let digits = include_str!("p008.txt")
         .bytes()
         .filter(|b| b.is_ascii_digit())

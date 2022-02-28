@@ -63,6 +63,8 @@ impl Expr {
     }
 }
 
+euler::solution!(p093, "Arithmetic expressions", 1258);
+
 fn bin(op: Op, lhs: f64, rhs: f64) -> Option<f64> {
     match op {
         Op::Add => Some(lhs + rhs),

@@ -3,6 +3,8 @@ use std::str::FromStr;
 
 use itertools::Itertools;
 
+euler::solution!(p54, "Poker hands", 376);
+
 pub fn p54() -> usize {
     include_str!("p054_poker.txt")
         .lines()
