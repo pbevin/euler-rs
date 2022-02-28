@@ -30,6 +30,7 @@ fn main() {
     check!(p81(), "Path sum 2 ways", 427337);
     check!(p82(), "Path sum 3 ways", 260324);
     check!(p83(), "Path sum 4 ways", 425185);
+    check!(p093(), "Arithmetic expressions", 1258);
 
     println!("{} All good", "🗸".green());
 }
