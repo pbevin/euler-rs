@@ -216,6 +216,7 @@ dependencies = [
  "automod",
  "criterion",
  "fixedbitset",
+ "gcd",
  "itertools",
  "lazy_static",
  "linkme",
@@ -249,6 +250,15 @@ name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
+
+[[package]]
+name = "gcd"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f37978dab2ca789938a83b2f8bc1ef32db6633af9051a6cd409eff72cbaaa79a"
+dependencies = [
+ "paste",
+]
 
 [[package]]
 name = "getrandom"
