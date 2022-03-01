@@ -228,6 +228,7 @@ dependencies = [
  "primal",
  "priority-queue",
  "proptest",
+ "rayon",
 ]
 
 [[package]]

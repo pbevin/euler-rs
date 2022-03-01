@@ -54,7 +54,8 @@ pub fn count_decimal_digits(num: i64) -> usize {
     count
 }
 
-pub const POWERS_OF_10: [usize; 13] = [
+/// List of powers of 10, up to the maximum size that will fit in a 64-bit usize.
+pub const POWERS_OF_10: [usize; 20] = [
     1,
     10,
     100,
@@ -68,6 +69,13 @@ pub const POWERS_OF_10: [usize; 13] = [
     10_000_000_000,
     100_000_000_000,
     1_000_000_000_000,
+    10_000_000_000_000,
+    100_000_000_000_000,
+    1_000_000_000_000_000,
+    10_000_000_000_000_000,
+    100_000_000_000_000_000,
+    1_000_000_000_000_000_000,
+    10_000_000_000_000_000_000,
 ];
 
 #[cfg(test)]
