@@ -22,9 +22,13 @@ pub use runner::check_all_solutions;
 pub use runner::Checkable;
 pub use runner::TestRunner;
 
-use linkme::distributed_slice;
+use integer_sqrt::IntegerSquareRoot;
 
-pub type TestParams = (&'static str, &'static str, Box<dyn Checkable + Sync>);
+pub fn isqrt<T: IntegerSquareRoot>(t: T) -> T {
+    t.integer_sqrt()
+}
+
+use linkme::distributed_slice;
 
 /// Contains all the project's test runners.
 #[distributed_slice]
