@@ -48,13 +48,9 @@ fn show_result(runner: &TestRunner, rating: &Rating, time_taken: &Duration) {
             );
         }
         Rating::WrongAnswer { actual, expected } => {
-            println!(
-                "❌{}: got {},\n\
-                    should be {}",
-                runner.name,
-                actual.red(),
-                expected.green()
-            );
+            println!("❌{}{} {}:", runner.name, format_timing(time_taken), "failed".red());
+            println!("  expected: {}", expected.green());
+            println!("       got: {}", actual.red());
         }
     }
 }
