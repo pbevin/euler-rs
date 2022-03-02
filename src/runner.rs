@@ -130,11 +130,11 @@ fn format_timing(duration: &Duration) -> String {
     if millis == 0 {
         String::new()
     } else {
-        let mut text = format!(" {}ms", millis);
+        let mut text = format!("{}ms", millis);
         if millis < 1000 {
-            text = format!("{}", text.yellow());
+            text = format!(" {}", text.yellow());
         } else {
-            text = format!("{}", text.red());
+            text = format!(" {}", text.black().on_yellow());
         }
         text
     }
