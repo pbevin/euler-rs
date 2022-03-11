@@ -16,7 +16,7 @@ pub use factors::factors;
 pub use fibs::fibs;
 pub use fibs::Fibs;
 
-pub use partitions::partitions3;
+pub use crate::partitions::partitions3;
 
 pub use runner::check_all_solutions;
 pub use runner::Checkable;

@@ -12,7 +12,7 @@ fn p085() -> usize {
     let xs = (0..=TARGET).map(|n| n * (n + 1) / 2).collect::<Vec<_>>();
     for (i, &ti) in xs.iter().enumerate().take(TARGET / 2).skip(2) {
         // j is the unique index where (i, j) and (i, j+1) are on opposite sides of the target.
-        let j = xs.partition_point(|&tj| ti * tj < TARGET);
+        let j = xs.partition_point(|&tj| ti.saturating_mul(tj) < TARGET);
         if j < i {
             continue;
         }

@@ -19,6 +19,7 @@ memoize = "0.2.1"
 num-bigint = "0.4.3"
 num-traits = "0.2.14"
 owo-colors = "3.2.0"
+partitions = { version = "0.2.4", features = ["compact"] }
 paste = "1.0.6"
 primal = "0.3.0"
 priority-queue = "1.2.1"
