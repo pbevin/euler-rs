@@ -20,9 +20,11 @@ num-bigint = "0.4.3"
 num-traits = "0.2.14"
 owo-colors = "3.2.0"
 paste = "1.0.6"
-primal = "0.2"
+primal = "0.3.0"
 priority-queue = "1.2.1"
+rand = "0.8.5"
 rayon = "1.5.1"
+tempfile = "3.3.0"
 
 [dev-dependencies]
 proptest = "1.0.0"
