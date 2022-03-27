@@ -18,6 +18,7 @@ mod p089_roman;
 mod p092_square_digit_chains;
 mod p093_arithmetic;
 mod p097_non_mersenne;
+mod p099_base_exp;
 mod p107_network;
 mod p127_abc_hits;
 mod p206_concealed_square;
