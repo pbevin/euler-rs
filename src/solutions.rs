@@ -15,6 +15,7 @@ mod p084_monopoly;
 mod p085_rectangles;
 mod p087_prime_power_triples;
 mod p089_roman;
+mod p092_square_digit_chains;
 mod p093_arithmetic;
 mod p097_non_mersenne;
 mod p107_network;
